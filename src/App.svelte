@@ -3,14 +3,49 @@
 	import Header from "./components/Header.svelte";
 	import Tabs from "./shared/Tabs.svelte";
 	import CreatePollForm from "./components/CreatePollForm.svelte";
+	import PollList from "./components/PollList.svelte";
 	
 
 	// tabs
 	let items = ['Current Polls', 'Add New Poll'];
 	let activeItem = 'Current Polls';
-
 	const tabChange = (e) => {
 		activeItem = e.detail;
+	}
+
+	// polls
+	let polls = [
+		{
+			id: 1,
+			question: "Python or Javascript",
+			answerA: "Python",
+			answerB: "Javascript",
+			votesA: 9,
+			votesB: 15,
+		},
+	];
+
+	const handleAdd = (e) => {
+		const poll = e.detail;
+		polls = [poll, ...polls];
+		console.log(polls);
+		activeItem = 'Current Polls';
+	}
+
+	const handleVote = (e) => {
+		const { id, option } = e.detail;
+		
+		let copyPolls = [...polls];
+		let upvotedPoll = copyPolls.find((poll) => poll.id == id);
+		
+		if (option === 'a') {
+			upvotedPoll.votesA ++;
+		}
+		if (option === 'b') {
+			upvotedPoll.votesB ++;
+		}
+
+		polls = copyPolls;
 	}
 
 </script>
@@ -19,9 +54,9 @@
 <main>
 	<Tabs {items} {activeItem} on:tabChange={tabChange}/>
 	{#if activeItem === 'Current Polls'}
-		<p>Poll List</p>
+		<PollList {polls} on:vote={handleVote}/>
 	{:else if activeItem === 'Add New Poll'}
-		<CreatePollForm />
+		<CreatePollForm on:add={handleAdd} />
 	{/if}
 </main>
 <Footer />
